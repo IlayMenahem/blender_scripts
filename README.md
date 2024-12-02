@@ -15,6 +15,6 @@ here we're going to generate a dataset using blender scripts.
 
 ## week 2
 - [x] to create a mesh
-- [] texture the mesh
+- [ ] texture the mesh
 
 ![mesh](/2w/mesh.png)
