@@ -11,3 +11,10 @@ here we're going to generate a dataset using blender scripts.
 - [x] create a blender script that generates a forest of cones
 
 ![forest](/1w/forest.png)
+
+
+## week 2
+- [x] to create a mesh
+- [] texture the mesh
+
+![mesh](/2w/mesh.png)

@@ -1,1 +1,4 @@
 **/blender/*
+*.blend
+**/__pycache__
+**/.DS_Store
