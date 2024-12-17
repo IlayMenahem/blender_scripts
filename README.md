@@ -15,4 +15,17 @@ here we're going to generate a dataset using blender scripts.
 ![mesh](/images/mesh.png)
 
 - [ ] texture the mesh
+  - [X] texture the mesh
+  - [ ] implement in script
+  - [ ]
 ![texturized mesh](/images/texturized_mesh.png)
+
+- [ ] add camera
+  - [ ] create path
+  - [ ] add camera and attach to path
+  - [ ] implement in script
+
+- [ ] add light
+
+- [ ] add vegitation
+- [ ] add fire and smoke
