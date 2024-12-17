@@ -1,14 +1,17 @@
+from posix import remove
 from perlin_noise import PerlinNoise
 import numpy as np
 import bpy
 
+from utils import clear, remove_file
+
 '''
 Terrain Heightmap Implementation
-Develop a terrain heightmap using Perlin noise, or a similar technique. 
+Develop a terrain heightmap using Perlin noise, or a similar technique.
 Include controls to adjust height variations, allowing shifts from flat plains to rugged hills.
 
-Ground Texturing with Shaders: Apply base ground textures, using shaders to blend 
-textures based on slope and elevation for a natural look. 
+Ground Texturing with Shaders: Apply base ground textures, using shaders to blend
+textures based on slope and elevation for a natural look.
 The shader should dynamically adjust textures for varying terrain types, such as grass on flatter areas and rocks on steeper inclines.
 '''
 
@@ -19,7 +22,7 @@ def generate_noise(xpix: int, ypix: int, octave: int, seed: int) -> np.ndarray:
 
     return noise
 
-def generate_terrain(xpix: int, ypix: int, height_variation: float, 
+def generate_terrain(xpix: int, ypix: int, height_variation: float,
                     ruggedness: float, seed: int = 0) -> np.ndarray:
     octaves: list[int] = [3, 6, 12, 24]
     scales: list[float] = [height_variation, height_variation, ruggedness, ruggedness]
@@ -60,20 +63,23 @@ def apply_texture(mesh: bpy.types.Object) -> bpy.types.Object:
     Apply texture to the terrain mesh.
     mesh: bpy.types.Object, the terrain mesh.
     '''
-    
+
     return mesh
 
 
 if __name__ == "__main__":
     xpix: int = 100
     ypix: int = 100
-    height_variation: float = 20.0
-    ruggedness: float = 0.1
+    height_variation: float = 5.0
+    ruggedness: float = 0.5
     seed: int = 0
+
+    remove_file("blends/terrain.blend")
+    clear()
 
     terrain = generate_terrain(xpix, ypix, height_variation, ruggedness, seed)
     mesh = generate_blender_terrain(terrain)
     mesh = apply_texture(mesh)
 
     bpy.context.view_layer.objects.active = mesh
-    bpy.ops.wm.save_as_mainfile(filepath="terrain.blend", check_existing=False)
+    bpy.ops.wm.save_as_mainfile(filepath="blends/terrain.blend", check_existing=False)

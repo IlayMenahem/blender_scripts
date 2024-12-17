@@ -7,14 +7,12 @@ here we're going to generate a dataset using blender scripts.
 [intresting simulation](https://computationalsciences.org/publications/haedrich-2021-wildfires.html)
 
 
-## week 1
+## Tasks
 - [x] create a blender script that generates a forest of cones
+![forest](/images/forest.png)
 
-![forest](/1w/forest.png)
-
-
-## week 2
 - [x] to create a mesh
-- [ ] texture the mesh
+![mesh](/images/mesh.png)
 
-![mesh](/2w/mesh.png)
+- [ ] texture the mesh
+![texturized mesh](/images/texturized_mesh.png)
