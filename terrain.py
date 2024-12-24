@@ -1,4 +1,3 @@
-from posix import remove
 from perlin_noise import PerlinNoise
 import numpy as np
 import bpy
@@ -63,6 +62,28 @@ def apply_texture(mesh: bpy.types.Object) -> bpy.types.Object:
     Apply texture to the terrain mesh.
     mesh: bpy.types.Object, the terrain mesh.
     '''
+    material = bpy.data.materials.new(name="TerrainMaterial")
+    material.use_nodes = True
+    material.node_tree.nodes.clear()
+
+    # Create shader nodes
+    node_tree = material.node_tree
+    nodes = node_tree.nodes
+
+    # Create principled BSDF node
+    principled_bsdf = nodes.new('ShaderNodeBsdfPrincipled')
+    principled_bsdf.location = (0, 0)
+
+    # Create material output node
+    material_output = nodes.new('ShaderNodeOutputMaterial')
+    material_output.location = (300, 0)
+
+    # Link nodes together
+    links = node_tree.links
+    links.new(principled_bsdf.outputs[0], material_output.inputs[0])
+
+    # Assign material to mesh
+    mesh.data.materials.append(material)
 
     return mesh
 
