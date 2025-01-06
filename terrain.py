@@ -2,8 +2,6 @@ from perlin_noise import PerlinNoise
 import numpy as np
 import bpy
 
-from utils import clear, remove_file
-
 '''
 Terrain Heightmap Implementation
 Develop a terrain heightmap using Perlin noise, or a similar technique.
@@ -31,31 +29,29 @@ def generate_terrain(xpix: int, ypix: int, height_variation: float,
 
     return terrain
 
-def generate_blender_terrain(terrain: np.ndarray):
-    '''
-    Display the terrain in blender.
-    terrain: np.ndarray, the terrain to display.
-    return: a blender object representing the terrain.
-    '''
+def array_to_mesh(terrain: np.ndarray) -> bpy.types.Object:
     mesh = bpy.data.meshes.new("terrain_mesh")
+
+    verts = [(x, y, hight) for (x,y), hight in np.ndenumerate(terrain)]
+    edges = []
+    faces = [(y * terrain.shape[1] + x, y * terrain.shape[1] + (x + 1),
+            (y + 1) * terrain.shape[1] + (x + 1), (y + 1) * terrain.shape[1] + x)
+            for x,y in np.ndindex(terrain.shape[0] - 1, terrain.shape[1] - 1)]
+
+    mesh.from_pydata(verts, edges, faces)
+    mesh.update()
+
     obj = bpy.data.objects.new("Terrain", mesh)
     bpy.context.collection.objects.link(obj)
 
-    verts = [(x, y, hight) for (x,y), hight in np.ndenumerate(terrain)]
-    faces = []
-    for x in range(terrain.shape[1]-1):
-        for y in range(terrain.shape[0]-1):
-            faces.append((
-                y * terrain.shape[1] + x,
-                y * terrain.shape[1] + (x + 1),
-                (y + 1) * terrain.shape[1] + (x + 1),
-                (y + 1) * terrain.shape[1] + x
-            ))
-
-    mesh.from_pydata(verts, [], faces)
-    mesh.update()
-
     return obj
+
+def generate_blender_terrain(xpix: int, ypix: int, height_variation: float,
+    ruggedness: float, seed: int = 0):
+    terrain = generate_terrain(xpix, ypix, height_variation, ruggedness, seed)
+    mesh = array_to_mesh(terrain)
+
+    return mesh
 
 def apply_texture(mesh: bpy.types.Object) -> bpy.types.Object:
     '''
@@ -86,21 +82,3 @@ def apply_texture(mesh: bpy.types.Object) -> bpy.types.Object:
     mesh.data.materials.append(material)
 
     return mesh
-
-
-if __name__ == "__main__":
-    xpix: int = 100
-    ypix: int = 100
-    height_variation: float = 5.0
-    ruggedness: float = 0.5
-    seed: int = 0
-
-    remove_file("blends/terrain.blend")
-    clear()
-
-    terrain = generate_terrain(xpix, ypix, height_variation, ruggedness, seed)
-    mesh = generate_blender_terrain(terrain)
-    mesh = apply_texture(mesh)
-
-    bpy.context.view_layer.objects.active = mesh
-    bpy.ops.wm.save_as_mainfile(filepath="blends/terrain.blend", check_existing=False)
