@@ -1,10 +1,12 @@
 import bpy
+import os
 
 from terrain import generate_blender_terrain
 from vegetation import generate_trees
 from utils import clear, remove_file
 
 if __name__ == "__main__":
+    path: str = os.path.join(os.getcwd(), "textures/brown_mud_leaves/textures/brown_mud_leaves_01_diff_4k.jpg")
     xpix: int = 100
     ypix: int = 100
     height_variation: float = 5.0
@@ -18,7 +20,7 @@ if __name__ == "__main__":
 
     clear()
 
-    mesh = generate_blender_terrain(xpix, ypix, height_variation, ruggedness, seed)
+    mesh = generate_blender_terrain(path, xpix, ypix, height_variation, ruggedness, seed)
 
     generate_trees(tree_count, xpix, ypix, mesh, tree_height, tree_radius)
 

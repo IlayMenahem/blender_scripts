@@ -46,39 +46,38 @@ def array_to_mesh(terrain: np.ndarray) -> bpy.types.Object:
 
     return obj
 
-def generate_blender_terrain(xpix: int, ypix: int, height_variation: float,
-    ruggedness: float, seed: int = 0):
-    terrain = generate_terrain(xpix, ypix, height_variation, ruggedness, seed)
-    mesh = array_to_mesh(terrain)
-
-    return mesh
-
-def apply_texture(mesh: bpy.types.Object) -> bpy.types.Object:
-    '''
-    Apply texture to the terrain mesh.
-    mesh: bpy.types.Object, the terrain mesh.
-    '''
+def apply_texture(mesh: bpy.types.Object, path: str) -> bpy.types.Object:
+    # init a clean material
     material = bpy.data.materials.new(name="TerrainMaterial")
     material.use_nodes = True
     material.node_tree.nodes.clear()
+    nodes = material.node_tree.nodes
+    links = material.node_tree.links
 
-    # Create shader nodes
-    node_tree = material.node_tree
-    nodes = node_tree.nodes
-
-    # Create principled BSDF node
+    # Create nodes
+    texture_coordinate = nodes.new('ShaderNodeTexCoord')
+    image_texture = nodes.new('ShaderNodeTexImage')
     principled_bsdf = nodes.new('ShaderNodeBsdfPrincipled')
-    principled_bsdf.location = (0, 0)
-
-    # Create material output node
     material_output = nodes.new('ShaderNodeOutputMaterial')
-    material_output.location = (300, 0)
 
-    # Link nodes together
-    links = node_tree.links
+    # Set node properties
+    image_texture.image = bpy.data.images.load(path)
+
+    # Create links
+    links.new(texture_coordinate.outputs[0], image_texture.inputs[0])
+    links.new(image_texture.outputs[0], principled_bsdf.inputs[0])
     links.new(principled_bsdf.outputs[0], material_output.inputs[0])
 
-    # Assign material to mesh
+    # Assign and activate material on mesh
     mesh.data.materials.append(material)
+    mesh.data.materials[0] = material
+
+    return mesh
+
+def generate_blender_terrain(path: str, xpix: int, ypix: int, height_variation: float,
+    ruggedness: float, seed: int = 0):
+    terrain = generate_terrain(xpix, ypix, height_variation, ruggedness, seed)
+    mesh = array_to_mesh(terrain)
+    mesh = apply_texture(mesh, path)
 
     return mesh
