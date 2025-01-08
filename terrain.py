@@ -70,7 +70,6 @@ def apply_texture(mesh: bpy.types.Object, path: str) -> bpy.types.Object:
 
     # Assign and activate material on mesh
     mesh.data.materials.append(material)
-    mesh.data.materials[0] = material
 
     return mesh
 

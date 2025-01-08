@@ -1,5 +1,10 @@
 import bpy
 import os
+import sys
+
+project_dir = os.path.dirname(os.path.abspath(__file__))
+if project_dir not in sys.path:
+    sys.path.append(project_dir)
 
 from terrain import generate_blender_terrain
 from vegetation import generate_trees
@@ -13,16 +18,13 @@ if __name__ == "__main__":
     ruggedness: float = 0.5
 
     tree_count = 100
-    tree_height = 10
-    tree_radius = 2
 
     seed: int = 0
 
     clear()
 
     mesh = generate_blender_terrain(path, xpix, ypix, height_variation, ruggedness, seed)
-
-    generate_trees(tree_count, xpix, ypix, mesh, tree_height, tree_radius)
+    generate_trees(tree_count, xpix, ypix, mesh)
 
     remove_file("blends/terrain.blend")
     bpy.ops.wm.save_as_mainfile(filepath="blends/terrain.blend", check_existing=False)
