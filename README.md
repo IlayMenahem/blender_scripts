@@ -8,24 +8,9 @@ here we're going to generate a dataset using blender scripts.
 
 
 ## Tasks
-- [x] create a blender script that generates a forest of cones
-![forest](/images/forest.png)
-
 - [x] to create a mesh
-![mesh](/images/mesh.png)
-
-- [ ] texture the mesh
-  - [X] texture the mesh
-  - [ ] implement in script
-  - [ ]
-![texturized mesh](/images/texturized_mesh.png)
-
+- [x] texture the mesh
+- [x] generate trees
 - [ ] add camera
-  - [ ] create path
-  - [ ] add camera and attach to path
-  - [ ] implement in script
-
 - [ ] add light
-
-- [ ] add vegitation
 - [ ] add fire and smoke

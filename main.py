@@ -1,10 +1,5 @@
 import bpy
 import os
-import sys
-
-project_dir = os.path.dirname(os.path.abspath(__file__))
-if project_dir not in sys.path:
-    sys.path.append(project_dir)
 
 from terrain import generate_blender_terrain
 from vegetation import generate_trees
