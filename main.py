@@ -4,7 +4,7 @@ import os
 from terrain import generate_blender_terrain
 from vegetation import generate_trees
 from light import add_light
-from camera import add_camera
+from camera import add_camera, attach_camera_to_curve
 from path import generate_curve
 from utils import clear, remove_file
 
@@ -24,8 +24,9 @@ if __name__ == "__main__":
     light_strength: float = 1.0
     light_color: tuple = (1, 1, 1)
 
-    camera_location: tuple = (0, 0, 10)
+    camera_location: tuple = (0, 0, 5)
     camera_rotation: tuple = (0, 0, 0)
+    path_duration: int = 200
 
     curve_offset: tuple = (xpix / 2, ypix / 2, 10)
     curve_scale: float = 20
@@ -34,8 +35,9 @@ if __name__ == "__main__":
     clear()
 
     add_light(light_type, light_location, light_strength, light_color)
-    add_camera(camera_location, camera_rotation)
-    generate_curve(curve_offset, curve_scale, point_count, seed)
+    camera = add_camera(camera_location, camera_rotation)
+    curve = generate_curve(curve_offset, curve_scale, point_count, seed)
+    attach_camera_to_curve(camera, curve, path_duration)
     mesh = generate_blender_terrain(path, xpix, ypix, height_variation, ruggedness, seed)
     generate_trees(tree_count, xpix, ypix, mesh)
 
