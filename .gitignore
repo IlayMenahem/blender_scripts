@@ -1,5 +1,6 @@
-**/blender/*
 **/__pycache__
+**/.ropeproject
 **/.DS_Store
-**/textures/*
-**/blends/*
+**/textures
+**/blends
+**/videos

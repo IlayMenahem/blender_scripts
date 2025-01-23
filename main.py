@@ -1,15 +1,14 @@
-import bpy
 import os
 
 from terrain import generate_blender_terrain
 from vegetation import generate_trees
 from light import add_light
-from camera import add_camera, attach_camera_to_curve
+from camera import add_camera, attach_camera_to_curve, get_video
 from path import generate_curve
-from utils import clear, remove_file
+from utils import clear
 
 if __name__ == "__main__":
-    path: str = os.path.join(os.getcwd(), "textures/brown_mud_leaves/textures/brown_mud_leaves_01_diff_4k.jpg")
+    path: str = os.path.join(os.getcwd(), "textures/grass-terrain/textures/rocky_terrain_02_diff_4k.jpg")
     xpix: int = 100
     ypix: int = 100
     height_variation: float = 5.0
@@ -28,7 +27,7 @@ if __name__ == "__main__":
     camera_rotation: tuple = (0, 0, 0)
     path_duration: int = 200
 
-    curve_offset: tuple = (xpix / 2, ypix / 2, 10)
+    curve_offset: tuple = (xpix / 2, ypix / 2, 50)
     curve_scale: float = 20
     point_count: int = 8
 
@@ -41,5 +40,4 @@ if __name__ == "__main__":
     mesh = generate_blender_terrain(path, xpix, ypix, height_variation, ruggedness, seed)
     generate_trees(tree_count, xpix, ypix, mesh)
 
-    remove_file("blends/terrain.blend")
-    bpy.ops.wm.save_as_mainfile(filepath="blends/terrain.blend", check_existing=False)
+    get_video("videos/terrain.mp4", camera, path_duration)
