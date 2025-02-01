@@ -11,6 +11,6 @@ here we're going to generate a dataset using blender scripts.
 - [x] to create a mesh
 - [x] texture the mesh
 - [x] generate trees
-- [ ] add camera
-- [ ] add light
+- [x] add camera
+- [x] add light
 - [ ] add fire and smoke
