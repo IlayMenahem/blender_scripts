@@ -3,12 +3,14 @@ import os
 from terrain import generate_blender_terrain
 from vegetation import generate_trees
 from light import add_light
-from camera import add_camera, attach_camera_to_curve, get_video
+from camera import add_camera, attach_camera_to_curve
 from path import generate_curve
-from utils import clear
+from utils import clear, save_scene_to_file
 
 if __name__ == "__main__":
-    path: str = os.path.join(os.getcwd(), "textures/grass-terrain/textures/rocky_terrain_02_diff_4k.jpg")
+    texture_path: str = "textures/grass-terrain/textures/rocky_terrain_02_diff_4k.jpg"
+    path: str = os.path.join(os.getcwd(), texture_path)
+    file_path: str = os.path.join(os.getcwd(), "terrain.blend")
     xpix: int = 100
     ypix: int = 100
     height_variation: float = 5.0
@@ -40,4 +42,5 @@ if __name__ == "__main__":
     mesh = generate_blender_terrain(path, xpix, ypix, height_variation, ruggedness, seed)
     generate_trees(tree_count, xpix, ypix, mesh)
 
-    get_video("videos/terrain.mp4", camera, path_duration)
+    # get_video("videos/terrain.mp4", camera, path_duration)
+    save_scene_to_file(file_path)
