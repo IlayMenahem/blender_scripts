@@ -1,14 +1,31 @@
 import bpy
 import os
 
-def remove_file(file_name: str):
+def remove_file(file_name: str) -> None:
+    '''
+    Removes a file if it exists.
+
+    Args:
+        file_name (str): The name of the file to remove.
+    '''
+
     if os.path.exists(file_name):
         os.remove(file_name)
 
-def save_scene_to_file(file_name: str):
+def save_scene_to_file(file_name: str) -> None:
+    '''
+    Saves the current scene to a file. \n
+    !!! if the file exists, it will be overwritten !!!
+
+    Args:
+        file_name (str): The name of the file to save the scene to.
+    '''
     remove_file(file_name)
     bpy.ops.wm.save_as_mainfile(filepath=file_name)
 
-def clear():
+def clear() -> None:
+    '''
+    Clears the scene by deleting all objects.
+    '''
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.object.delete()

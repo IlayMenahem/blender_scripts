@@ -8,6 +8,9 @@ implement initial tree models, Set up a basic random spawning system with a dens
 '''
 
 def load_tree():
+    '''
+    Loads a tree model from a file and returns it.
+    '''
     directory = os.path.join(os.getcwd(), "models/trees")
     filename = "tree.fbx"
     filepath = os.path.join(directory, filename)
@@ -18,10 +21,34 @@ def load_tree():
     return tree
 
 def put_on_mesh(obj, terrain_mesh, x, y):
-    hight = obj.dimensions.z
-    obj.location = (x, y, hight / 2)
+    '''
+    Places the given object on height 0 at the specified coordinates.
+
+    Parameters:
+    obj (bpy.types.Object): The object to place.
+    terrain_mesh (bpy.types.Object): The terrain mesh to place the object on.
+    x (float): The x-coordinate of the object's position.
+    y (float): The y-coordinate of the object's position.
+
+    Returns:
+    None
+    '''
+    height = obj.dimensions.z
+    obj.location = (x, y, height / 2)
 
 def generate_trees(count: int, xpix: int, ypix: int, terrain_mesh: bpy.types.Object):
+    '''
+    Generates trees on the terrain mesh at random positions.
+
+    Parameters:
+    count (int): The number of trees to generate.
+    xpix (int): The width of the terrain mesh.
+    ypix (int): The height of the terrain mesh.
+    terrain_mesh (bpy.types.Object): The terrain mesh to place the trees on.
+
+    Returns:
+    None
+    '''
     for _ in range(count):
         x = random.uniform(0, xpix)
         y = random.uniform(0, ypix)

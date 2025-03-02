@@ -1,6 +1,16 @@
 import bpy
 
 def add_camera(location: tuple[float, float, float], rotation: tuple[float, float, float]) -> bpy.types.Object:
+    '''
+    Adds a camera to the scene with the given location and rotation.
+
+    Parameters:
+    - location: The location of the camera in 3D space (x, y, z).
+    - rotation: The rotation of the camera as Euler angles (x, y, z).
+
+    Returns:
+    - The newly created camera object.
+    '''
     camera = bpy.data.cameras.new("camera")
     camera_obj = bpy.data.objects.new("camera", camera)
     camera_obj.location = location
@@ -11,6 +21,17 @@ def add_camera(location: tuple[float, float, float], rotation: tuple[float, floa
     return camera_obj
 
 def attach_camera_to_curve(camera: bpy.types.Object, curve: bpy.types.Object, path_duration: int):
+    '''
+    Attaches a camera to a curve to create a path animation.
+
+    Parameters:
+    - camera: The camera object to attach to the curve.
+    - curve: The curve object that defines the camera path.
+    - path_duration: The duration of the path animation in frames.
+
+    Returns:
+    - None
+    '''
     bpy.context.view_layer.objects.active = camera
     bpy.ops.object.constraint_add(type='FOLLOW_PATH')
     camera.constraints["Follow Path"].target = curve
@@ -28,10 +49,15 @@ def attach_camera_to_curve(camera: bpy.types.Object, curve: bpy.types.Object, pa
 
 def get_video(file_path: str, camera: bpy.types.Object, path_duration: int):
     '''
-    Get a video of the camera
-    :param file_path: The path to save the video
-    :param camera: The camera to record
-    :param path_duration: The length of the video
+    Renders a video using the specified camera and path duration.
+
+    Parameters:
+    - file_path: The path where the rendered video will be saved.
+    - camera: The camera object used for rendering the video.
+    - path_duration: The duration of the video in frames.
+
+    Returns:
+    - None
     '''
     bpy.context.scene.camera = camera
     bpy.context.scene.frame_end = path_duration
