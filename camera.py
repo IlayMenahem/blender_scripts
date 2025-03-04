@@ -1,12 +1,15 @@
 import bpy
 
-def add_camera(location: tuple[float, float, float], rotation: tuple[float, float, float]) -> bpy.types.Object:
+def add_camera(location: tuple[float, float, float], rotation: tuple[float, float, float],
+                resolution: tuple[int, int], fov: float) -> bpy.types.Object:
     '''
     Adds a camera to the scene with the given location and rotation.
 
     Parameters:
     - location: The location of the camera in 3D space (x, y, z).
     - rotation: The rotation of the camera as Euler angles (x, y, z).
+    - resolution: The resolution of the camera in pixels (width, height).
+    - fov: The field of view of the camera in degrees.
 
     Returns:
     - The newly created camera object.
@@ -15,6 +18,9 @@ def add_camera(location: tuple[float, float, float], rotation: tuple[float, floa
     camera_obj = bpy.data.objects.new("camera", camera)
     camera_obj.location = location
     camera_obj.rotation_euler = rotation
+    camera_obj.data.resolution_x = resolution[0]
+    camera_obj.data.resolution_y = resolution[1]
+    camera_obj.data.angle = fov
 
     bpy.context.collection.objects.link(camera_obj)
 
@@ -50,6 +56,7 @@ def attach_camera_to_curve(camera: bpy.types.Object, curve: bpy.types.Object, pa
 def get_video(file_path: str, camera: bpy.types.Object, path_duration: int):
     '''
     Renders a video using the specified camera and path duration.
+    Uses GPU acceleration with cycles rendering for optimal performance.
 
     Parameters:
     - file_path: The path where the rendered video will be saved.
@@ -64,5 +71,9 @@ def get_video(file_path: str, camera: bpy.types.Object, path_duration: int):
     bpy.context.scene.render.image_settings.file_format = 'FFMPEG'
     bpy.context.scene.render.ffmpeg.format = 'MPEG4'
     bpy.context.scene.render.filepath = file_path
+
+    # use GPU acceleration with cycles rendering for optimal performance
+    bpy.context.scene.render.engine = 'CYCLES'
+    bpy.context.scene.cycles.device = 'GPU'
 
     bpy.ops.render.render(animation=True)
