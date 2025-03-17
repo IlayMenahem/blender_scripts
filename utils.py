@@ -29,3 +29,14 @@ def clear() -> None:
     '''
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.object.delete()
+
+def clear_except_to(object) -> None:
+    '''
+    Clears the scene by deleting all objects except the ones in the list.
+
+    Args:
+        object (bpy.types.Object): The object to keep.
+    '''
+    bpy.ops.object.select_all(action='DESELECT')
+    object.select_set(True)
+    bpy.ops.object.delete()
