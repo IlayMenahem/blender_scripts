@@ -53,7 +53,7 @@ def place_trees_on_terrain(terrain_obj, tree_obj, num_trees, fire_iteration):
 def save_fire_coords_to_file(coords, filepath):
     """
     Save the coordinates of the tree set on fire to a text file.
-    
+
     Parameters:
         coords (tuple): The (x, y, z) coordinates of the tree set on fire.
         filepath (str): The path to the output text file.
@@ -65,13 +65,13 @@ def save_fire_coords_to_file(coords, filepath):
     else:
         print("No fire tree coordinates to save.")
 
-def main(terrain_blend_path, tree_blend_path, tree_name, num_trees, output_path, fire_iteration):
+def generate_forest(terrain_blend_path, tree_blend_path, tree_name, num_trees, output_path, fire_iteration):
     # Clear the existing scene
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    
+
     # Load the terrain
     load_blend(terrain_blend_path, "Landscape.003")  # Replace with the actual name of the terrain object
-    
+
     # Load the tree object
     if tree_blend_path and os.path.exists(tree_blend_path):
         load_blend(tree_blend_path, tree_name)
@@ -80,19 +80,23 @@ def main(terrain_blend_path, tree_blend_path, tree_name, num_trees, output_path,
             raise ValueError(f"Tree object '{tree_name}' not found in {tree_blend_path}.")
     else:
         raise FileNotFoundError(f"Tree file not found at {tree_blend_path}.")
-    
+
     # Get the terrain object
     terrain_obj = bpy.data.objects.get("Landscape.003")  # Replace with the actual name
     if not terrain_obj:
         raise ValueError("Terrain object not found in the scene.")
-    
+
     # Place trees on the terrain
     place_trees_on_terrain(terrain_obj, tree_obj, num_trees, fire_iteration)
-    
+
     # Save the result to a new BLEND file
     bpy.ops.wm.save_as_mainfile(filepath=output_path)
 
+
 if __name__ == "__main__":
+    '''
+    this can be used to create a blend without a video
+    '''
     # Set up argument parsing
     parser = argparse.ArgumentParser(description="Place trees on a terrain in Blender.")
     parser.add_argument("--terrain", required=True, help="Path to the terrain .blend file.")
@@ -112,7 +116,7 @@ if __name__ == "__main__":
     output_path = os.path.join(script_dir, args.output)
 
     # Call the main function with the parsed arguments
-    main(
+    generate_forest(
         terrain_blend_path=terrain_blend_path,
         tree_blend_path=tree_blend_path,
         tree_name=args.name,
