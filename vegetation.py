@@ -7,14 +7,13 @@ Basic Vegetation Generation: In the provided Blender project,
 implement initial tree models, Set up a basic random spawning system with a density control variable to adjust tree concentration.
 '''
 
-def load_tree():
+def load_vegetation():
     '''
     Loads a tree model from a file and returns it.
     '''
-    directory = os.path.join(os.getcwd(), "models/trees")
-    filename = "tree.fbx"
-    filepath = os.path.join(directory, filename)
-
+    filenames = ["tree.fbx"]
+    filename = random.choice(filenames)
+    filepath = os.path.join(os.getcwd(), "models", filename)
     bpy.ops.import_scene.fbx(filepath=filepath)
     tree = bpy.context.selected_objects[0]
 
@@ -53,5 +52,5 @@ def generate_trees(count: int, xpix: int, ypix: int, terrain_mesh: bpy.types.Obj
         x = random.uniform(0, xpix)
         y = random.uniform(0, ypix)
 
-        tree = load_tree()
+        tree = load_vegetation()
         put_on_mesh(tree, terrain_mesh, x, y)
