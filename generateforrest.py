@@ -20,8 +20,10 @@ def place_trees_on_terrain(terrain_obj, tree_obj, num_trees, fire_iteration):
     max_x = max(corner.x for corner in bbox_corners)
     min_y = min(corner.y for corner in bbox_corners)
     max_y = max(corner.y for corner in bbox_corners)
+
     for corner in bbox_corners:
         bpy.ops.mesh.primitive_cube_add(size=1, location=corner)
+
     for i in range(num_trees):
         # Generate random coordinates within the terrain's bounds
         x = random.uniform(min_x, max_x)
@@ -35,9 +37,9 @@ def place_trees_on_terrain(terrain_obj, tree_obj, num_trees, fire_iteration):
         )
 
         # Debug: Print raycast origin and result
-        print(f"Raycast origin: {origin}, direction: {direction}")
+        # print(f"Raycast origin: {origin}, direction: {direction}")
         if result:
-            print(f"Tree placed at: {location}")
+            # print(f"Tree placed at: {location}")
             # Duplicate the tree and place it at the hit location
             new_tree = tree_obj.copy()
             new_tree.location = location
@@ -48,7 +50,10 @@ def place_trees_on_terrain(terrain_obj, tree_obj, num_trees, fire_iteration):
                 fire_tree_coords = location
                 save_fire_coords_to_file(fire_tree_coords, "fire_tree_coords.txt")
         else:
-            print(f"Raycast missed at ({x}, {y})")
+            pass
+            # print(f"Raycast missed at ({x}, {y})")
+
+    return min_x, max_x, min_y, max_y
 
 def save_fire_coords_to_file(coords, filepath):
     """
@@ -87,11 +92,12 @@ def generate_forest(terrain_blend_path, tree_blend_path, tree_name, num_trees, o
         raise ValueError("Terrain object not found in the scene.")
 
     # Place trees on the terrain
-    place_trees_on_terrain(terrain_obj, tree_obj, num_trees, fire_iteration)
+    min_x, max_x, min_y, max_y = place_trees_on_terrain(terrain_obj, tree_obj, num_trees, fire_iteration)
 
     # Save the result to a new BLEND file
     bpy.ops.wm.save_as_mainfile(filepath=output_path)
 
+    return min_x, max_x, min_y, max_y
 
 if __name__ == "__main__":
     '''

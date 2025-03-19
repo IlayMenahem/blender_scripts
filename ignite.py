@@ -1,5 +1,6 @@
 import bpy
 import os
+
 def add_fire_and_smoke(tree_obj):
     """
     Adds a fire and smoke simulation to the tree using Blender's fluid physics.
@@ -29,7 +30,7 @@ def add_fire_and_smoke(tree_obj):
         domain_settings.use_flame = True  # Enable flame simulation
     if hasattr(domain_settings, 'use_smoke'):
         domain_settings.use_smoke = True  # Enable smoke simulation
-   
+
 
     # Set the tree as the flow object to emit fire and smoke
     bpy.context.view_layer.objects.active = tree_obj
@@ -72,9 +73,12 @@ def main(tree_blend_path, output_path):
     # Save the result to a new BLEND file
     bpy.ops.wm.save_as_mainfile(filepath=output_path)
 
-# Example usage
-script_dir = os.path.dirname(os.path.abspath(__file__))  # Get the directory of the script
-tree_blend_path = os.path.join(script_dir, "tree.blend")  # Path to tree.blend
-output_path = os.path.join(script_dir, "tree_with_fire.blend")  # Path to save the output
+    print("--------- not here ----------")
 
-main(tree_blend_path, output_path)
+if __name__ == "__main__":
+    # Example usage
+    script_dir = os.path.dirname(os.path.abspath(__file__))  # Get the directory of the script
+    tree_blend_path = os.path.join(script_dir, "tree.blend")  # Path to tree.blend
+    output_path = os.path.join(script_dir, "tree_with_fire.blend")  # Path to save the output
+
+    main(tree_blend_path, output_path)
