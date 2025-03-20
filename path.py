@@ -1,7 +1,7 @@
 import bpy
 import random
 
-def generate_curve(offset: tuple[float, float, float], scale: float, point_count: int, seed: int) -> bpy.types.Object:
+def generate_curve(min_x,max_x,min_y,max_y,offset: tuple[float, float, float], scale: float, point_count: int, seed: int) -> bpy.types.Object:
     """
     Generates a random curve with the given offset, scale, point count, and seed.
 
@@ -30,8 +30,8 @@ def generate_curve(offset: tuple[float, float, float], scale: float, point_count
     # Set coordinates for the points
     points = spline.bezier_points
     for i, point in enumerate(points):
-        x = random.uniform(-scale, scale) + offset[0]
-        y = random.uniform(-scale, scale) + offset[1]
+        x = random.uniform(min_x, max_x) + offset[0]
+        y = random.uniform(min_y, max_y) + offset[1]
         z = random.uniform(-scale, scale) + offset[2]
         point.co = (x, y, z)
         point.handle_left_type = 'AUTO'
