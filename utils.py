@@ -40,3 +40,16 @@ def clear_except_to(object) -> None:
     bpy.ops.object.select_all(action='DESELECT')
     object.select_set(True)
     bpy.ops.object.delete()
+
+def load_blend(filepath, object_name):
+    '''
+    Load a specific object from a BLEND file.
+
+    Args:
+        filepath (str): The path to the BLEND file.
+        object_name (str): The name of the object to load.
+    '''
+    with bpy.data.libraries.load(filepath) as (data_from, data_to):
+        data_to.objects = [object_name]
+    for obj in data_to.objects:
+        bpy.context.collection.objects.link(obj)
