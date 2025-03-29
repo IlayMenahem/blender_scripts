@@ -41,15 +41,23 @@ def clear_except_to(object) -> None:
     object.select_set(True)
     bpy.ops.object.delete()
 
-def load_blend(filepath, object_name):
+def load_blend(filepath) -> bpy.types.Object:
     '''
     Load a specific object from a BLEND file.
 
     Args:
         filepath (str): The path to the BLEND file.
-        object_name (str): The name of the object to load.
+
+    Returns:
+        bpy.types.Object: The object loaded from the BLEND file.
     '''
     with bpy.data.libraries.load(filepath) as (data_from, data_to):
-        data_to.objects = [object_name]
+        data_to.objects = data_from.objects
+
+    # Link objects to the current scene
+    scene = bpy.context.scene
     for obj in data_to.objects:
-        bpy.context.collection.objects.link(obj)
+        if obj is not None:
+            scene.collection.objects.link(obj)
+
+    return data_to.objects

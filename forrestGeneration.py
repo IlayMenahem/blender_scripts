@@ -1,95 +1,71 @@
-import bpy
 import os
+import argparse
 import random
-from mathutils import Vector
 
-from utils import load_blend
-from ignite import add_fire_and_smoke
+from terrain import generate_blender_terrain
+from vegetation import generate_trees, add_burning_tree
+from light import add_light
+from utils import clear, save_scene_to_file
 
-def save_fire_coords_to_file(coords, filepath):
-    """
-    Save the coordinates of the tree set on fire to a text file.
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Generate a Blender scene with terrain, trees, and a burning tree.")
 
-    Parameters:
-        coords (tuple): The (x, y, z) coordinates of the tree set on fire.
-        filepath (str): The path to the output text file.
-    """
-    if not coords:
-        raise ValueError("No coordinates provided to save to file.")
+    parser.add_argument("--terrain-texture-path", type=str,
+                        default="textures/grass-terrain/textures/rocky_terrain_02_diff_4k.jpg",
+                        help="Path to terrain texture")
+    parser.add_argument("--output-path", type=str,
+                        default=os.path.join("terrains", "terrain.blend"),
+                        help="Path to save the output blend file")
+    parser.add_argument("--xpix", type=int, default=100,
+                        help="Number of pixels in x dimension")
+    parser.add_argument("--ypix", type=int, default=100,
+                        help="Number of pixels in y dimension")
+    parser.add_argument("--height-variation", type=float, default=5.0,
+                        help="Height variation for terrain")
+    parser.add_argument("--ruggedness", type=float, default=0.5,
+                        help="Ruggedness of terrain")
 
-    with open(filepath, "w") as file:
-        file.write(f"Fire tree coordinates: {coords}\n")
+    parser.add_argument("--tree-count", type=int, default=60,
+                        help="Number of trees to generate")
+    parser.add_argument("--tree-on-fire-position", type=tuple, default=(50, 50),
+                        help="Position of burning tree")
+    parser.add_argument("--seed", type=int, default=0, help="Random seed for generation")
 
-def place_trees_on_terrain(terrain_obj, tree_obj, num_trees, fire_iteration):
-    """
-    Place trees on the terrain surface and add fire to one.
+    parser.add_argument("--light-type", type=str, default="SUN",
+                        help="Type of light to use")
+    parser.add_argument("--light-location", type=tuple, default=(0, 0, 25),
+                        help="Location of light source")
+    parser.add_argument("--light-strength", type=float, default=1.0,
+                        help="Strength of light")
+    parser.add_argument("--light-color", type=tuple, default=(1, 1, 1),
+                        help="Color of light")
 
-    Parameters:
-        terrain_obj (bpy.types.Object): The terrain object.
-        tree_obj (bpy.types.Object): The tree object to use.
-        num_trees (int): The total number of trees to place.
-        fire_iteration (int): The tree iteration to set on fire.
-    """
-    # Get the terrain's bounding box in global coordinates
-    bbox_corners = [terrain_obj.matrix_world @ Vector(corner) for corner in terrain_obj.bound_box]
-    min_x = min(corner.x for corner in bbox_corners)
-    max_x = max(corner.x for corner in bbox_corners)
-    min_y = min(corner.y for corner in bbox_corners)
-    max_y = max(corner.y for corner in bbox_corners)
 
-    for corner in bbox_corners:
-        bpy.ops.mesh.primitive_cube_add(size=1, location=corner)
+    args = parser.parse_args()
 
-    for i in range(num_trees):
-        # Generate random coordinates within the terrain's bounds
-        x = random.uniform(min_x, max_x)
-        y = random.uniform(min_y, max_y)
+    terrain_texture_path: str = os.path.join(os.getcwd(), args.terrain_texture_path)
+    file_path: str = os.path.join(os.getcwd(), args.output_path)
+    xpix: int = args.xpix
+    ypix: int = args.ypix
+    height_variation: float = args.height_variation
+    ruggedness: float = args.ruggedness
 
-        # Raycast to find the terrain's surface at (x, y)
-        origin = (x, y, max(corner.z for corner in bbox_corners) + 10)  # Start higher above the terrain
-        direction = (0, 0, -1)  # Cast downwards
-        result, location, normal, index, object, matrix = bpy.context.scene.ray_cast(
-            bpy.context.view_layer.depsgraph, origin, direction
-        )
+    tree_count: int = args.tree_count
+    tree_on_fire_position: tuple = args.tree_on_fire_position
 
-        if result:
-            # Duplicate the tree and place it at the hit location
-            new_tree = tree_obj.copy()
-            new_tree.location = location
-            new_tree.rotation_euler = (0, 0, random.uniform(0, 3.14159))  # Random rotation
-            bpy.context.collection.objects.link(new_tree)
-            if i == fire_iteration:
-                add_fire_and_smoke(new_tree)  # Add fire to the specified tree
-                fire_tree_coords = location
-                save_fire_coords_to_file(fire_tree_coords, "fire_tree_coords.txt")
+    seed: int = args.seed
+    random.seed(args.seed)
 
-    return min_x, max_x, min_y, max_y
+    light_type: str = args.light_type
+    light_location: tuple = args.light_location
+    light_strength: float = args.light_strength
+    light_color: tuple = args.light_color
 
-def generate_forest(terrain_blend_path, tree_blend_path, tree_name, num_trees, output_path, fire_iteration):
-    """Generate the forest, add light, camera, and curve, then save the scene."""
-    # Clear the existing scene
-    bpy.ops.wm.read_factory_settings(use_empty=True)
+    clear()
 
-    # Load the terrain
-    load_blend(terrain_blend_path, "Landscape.003")  # Replace with the actual name of the terrain object
+    add_burning_tree(tree_on_fire_position)
+    mesh = generate_blender_terrain(terrain_texture_path, xpix, ypix, height_variation, ruggedness, seed)
+    generate_trees(tree_count, xpix, ypix, mesh)
+    add_light(light_type, light_location, light_strength, light_color)
 
-    # Load the tree object
-    if tree_blend_path and os.path.exists(tree_blend_path):
-        load_blend(tree_blend_path, tree_name)
-        tree_obj = bpy.data.objects.get(tree_name)
-        if not tree_obj:
-            raise ValueError(f"Tree object '{tree_name}' not found in {tree_blend_path}.")
-    else:
-        raise FileNotFoundError(f"Tree file not found at {tree_blend_path}.")
-
-    # Get the terrain object
-    terrain_obj = bpy.data.objects.get("Landscape.003")  # Replace with the actual name
-    if not terrain_obj:
-        raise ValueError("Terrain object not found in the scene.")
-
-    # Place trees on the terrain
-    min_x, max_x, min_y, max_y = place_trees_on_terrain(terrain_obj, tree_obj, num_trees, fire_iteration)
-
-    bpy.ops.wm.save_as_mainfile(filepath=output_path)
-
-    return (min_x, max_x, min_y, max_y)
+    save_scene_to_file(file_path)

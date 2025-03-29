@@ -1,6 +1,7 @@
 import os
 import bpy
 import random
+from ignite import add_fire_and_smoke
 
 '''
 Basic Vegetation Generation: In the provided Blender project,
@@ -19,13 +20,12 @@ def load_vegetation():
 
     return tree
 
-def put_on_mesh(obj, terrain_mesh, x, y):
+def put_on_mesh(obj, x, y):
     '''
     Places the given object on height 0 at the specified coordinates.
 
     Parameters:
     obj (bpy.types.Object): The object to place.
-    terrain_mesh (bpy.types.Object): The terrain mesh to place the object on.
     x (float): The x-coordinate of the object's position.
     y (float): The y-coordinate of the object's position.
 
@@ -53,4 +53,18 @@ def generate_trees(count: int, xpix: int, ypix: int, terrain_mesh: bpy.types.Obj
         y = random.uniform(0, ypix)
 
         tree = load_vegetation()
-        put_on_mesh(tree, terrain_mesh, x, y)
+        put_on_mesh(tree, x, y)
+
+def add_burning_tree(position: tuple) -> bpy.types.Object:
+    '''
+    add a burning tree to the scene at the specified position.
+
+    Parameters:
+    position (tuple): The position of the burning tree.
+
+    Returns:
+    bpy.types.Object: The burning tree object.
+    '''
+    tree = load_vegetation()
+    put_on_mesh(tree, position[0], position[1])
+    add_fire_and_smoke(tree)
