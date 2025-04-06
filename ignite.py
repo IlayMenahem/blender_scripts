@@ -3,6 +3,12 @@ import bpy
 def add_fire_and_smoke(tree_obj):
     """
     Adds fire and smoke to a tree object using a simplified and more reliable approach.
+
+    Args:
+    tree_obj: bpy.types.Object: The tree object to add fire and smoke to
+
+    Returns:
+    bpy.types.Object: The domain object created for the fire simulation
     """
     # Store the tree's dimensions and location
     tree_dims = tree_obj.dimensions
@@ -26,14 +32,8 @@ def add_fire_and_smoke(tree_obj):
 
     domain_settings = domain.modifiers["Fluid"].domain_settings
     domain_settings.domain_type = 'GAS'
-
-    # Lower resolution for better stability
     domain_settings.resolution_max = 64
-
-    # Explicitly disable adaptive domain to avoid related errors
-    if hasattr(domain_settings, 'use_adaptive_domain'):
-        domain_settings.use_adaptive_domain = False
-
+    domain_settings.use_adaptive_domain = False
     domain_settings.time_scale = 1.0
     domain_settings.burning_rate = 0.75
     domain_settings.flame_smoke = 1.0
@@ -43,7 +43,6 @@ def add_fire_and_smoke(tree_obj):
     domain_settings.vorticity = 0.2
 
     # Now set up the tree as the flow object
-    print(f"Setting up {tree_obj.name} as flow object...")
     bpy.context.view_layer.objects.active = tree_obj
     tree_obj.select_set(True)
     bpy.ops.object.modifier_add(type='FLUID')
@@ -51,10 +50,9 @@ def add_fire_and_smoke(tree_obj):
 
     # Configure flow settings with more conservative values
     flow_settings = tree_obj.modifiers["Fluid"].flow_settings
-    flow_settings.flow_type = 'FIRE'  # Use just FIRE instead of BOTH for simplicity
+    flow_settings.flow_type = 'FIRE'
     flow_settings.flow_behavior = 'INFLOW'
     flow_settings.fuel_amount = 0.5
-
     flow_settings.subframes = 2
 
     # Set initial velocity for more natural fire movement

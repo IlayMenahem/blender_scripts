@@ -1,4 +1,3 @@
 perlin-noise
-numpy
-mathutils
-bpy
+numpy<2
+bpy<=4.4.0
