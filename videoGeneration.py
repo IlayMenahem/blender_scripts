@@ -1,59 +1,63 @@
 import os
 import bpy
 import random
-import argparse
-from utils import clear
-from path import generate_curve
-from camera import add_camera, look_at_curve, get_video
+import math
+
+def get_video(file_path: str, camera: bpy.types.Object, path_duration: int, resolution: tuple[int, int], fov: float):
+    '''
+    Renders a video using the specified camera and path duration.
+    Uses GPU acceleration with cycles rendering for optimal performance.
+
+    Parameters:
+    - file_path: The path where the rendered video will be saved.
+    - camera: The camera object used for rendering the video.
+    - path_duration: The duration of the video in frames.
+    - resolution: The resolution of the video in pixels.
+    - fov: The field of view of the camera in degrees.
+
+    Returns:
+    - None
+    '''
+    bpy.context.scene.camera = camera
+    bpy.context.scene.frame_end = path_duration
+    bpy.context.scene.render.image_settings.file_format = 'FFMPEG'
+    bpy.context.scene.render.ffmpeg.format = 'MPEG4'
+    bpy.context.scene.render.filepath = file_path
+
+    bpy.context.scene.render.engine = 'CYCLES'
+    bpy.context.scene.cycles.device = 'GPU'
+
+    bpy.context.scene.render.resolution_x = resolution[0]
+    bpy.context.scene.render.resolution_y = resolution[1]
+    bpy.context.scene.camera.data.angle = math.radians(fov)
+
+    bpy.ops.render.render(animation=True)
+
+def clear():
+    bpy.ops.object.select_all(action='SELECT')
+    bpy.ops.object.delete()
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Render a video of the fire and forrest")
+    # Configuration values directly hard-coded instead of using argparser
+    scene_path = os.path.join("terrains", "terrain.blend")
+    output_video_path = os.path.join("videos", "terrain.mp4")
+    camera_location = (50, 50, 100)
+    seed = 0
 
-    parser.add_argument("--scene-path", type=str, default=os.path.join("terrains", "terrain.blend"))
-    parser.add_argument("--output-video-path", type=str, default=os.path.join("videos", "terrain.mp4"),
-                        help="Path to save the output video file")
-    parser.add_argument("--camera-location", type=tuple, default=(50, 50, 100),
-                            help="Location of camera")
-    parser.add_argument("--seed", type=int, default=0, help="Random seed for generation")
+    render_resolution = (144, 144)
+    render_fov = 30.0
+    path_duration = 200
 
-    parser.add_argument("--render-resolution", type=tuple, default=(144, 144),
-                        help="Render resolution")
-    parser.add_argument("--render-fov", type=float, default=30.0,
-                        help="Field of view for rendering")
-    parser.add_argument("--path-duration", type=int, default=200,
-                        help="Duration of camera path")
-
-    parser.add_argument("--curve-offset", type=tuple, default=(50, 50, 25),
-                        help="Offset of the curve the camera follows")
-    parser.add_argument("--curve-scale", type=float, default=20,
-                        help="Scale of camera curve")
-    parser.add_argument("--point-count", type=int, default=8,
-                        help="Number of points in camera curve")
-
-    args = parser.parse_args()
-
-    video_path: str = os.path.join(os.getcwd(), args.output_video_path)
-    scence_path: str = os.path.join(os.getcwd(), args.scene_path)
-
-    seed: int = args.seed
+    # Set the random seed
     random.seed(seed)
 
-    camera_location: tuple = args.camera_location
-    camera_rotation: tuple = (0, 0, 0)
-
-    render_resolution: tuple = args.render_resolution
-    render_fov: float = args.render_fov
-    path_duration: int = args.path_duration
-
-    curve_offset: tuple = args.curve_offset
-    curve_scale: float = args.curve_scale
-    point_count: int = args.point_count
+    # Base path definition
+    base_path = '/Users/ilay_menachem/Documents/technion.nosync/2025/blender_scripts'
+    video_path = os.path.join(base_path, output_video_path)
+    scence_path = os.path.join(base_path, scene_path)
 
     clear()
     bpy.ops.wm.open_mainfile(filepath=scence_path)
 
-    camera = add_camera(camera_location, camera_rotation)
-    curve = generate_curve(curve_offset, curve_scale, point_count)
-    curve = look_at_curve(camera, curve, path_duration)
-
+    camera = bpy.data.objects['camera']
     get_video(video_path, camera, path_duration, render_resolution, render_fov)

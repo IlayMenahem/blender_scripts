@@ -6,6 +6,8 @@ from terrain import generate_blender_terrain
 from vegetation import generate_trees, add_burning_tree
 from light import add_light
 from utils import clear, save_scene_to_file
+from path import generate_curve
+from camera import add_camera, look_at_curve
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate a Blender scene with terrain, trees, and a burning tree.")
@@ -40,6 +42,17 @@ if __name__ == "__main__":
     parser.add_argument("--light-color", type=tuple, default=(1, 1, 1),
                         help="Color of light")
 
+    parser.add_argument("--curve-offset", type=tuple, default=(50, 50, 25),
+                            help="Offset of the curve the camera follows")
+    parser.add_argument("--curve-scale", type=float, default=20,
+                        help="Scale of camera curve")
+    parser.add_argument("--point-count", type=int, default=8,
+                        help="Number of points in camera curve")
+
+    parser.add_argument("--path-duration", type=int, default=200,
+                        help="Duration of camera path")
+    parser.add_argument("--camera-location", type=tuple, default=(50, 50, 100),
+                            help="Location of camera")
 
     args = parser.parse_args()
 
@@ -61,11 +74,22 @@ if __name__ == "__main__":
     light_strength: float = args.light_strength
     light_color: tuple = args.light_color
 
+    camera_location: tuple = args.camera_location
+    camera_rotation: tuple = (0, 0, 0)
+    path_duration: int = args.path_duration
+
+    curve_offset: tuple = args.curve_offset
+    curve_scale: float = args.curve_scale
+    point_count: int = args.point_count
+
     clear()
 
     add_burning_tree(tree_on_fire_position)
     mesh = generate_blender_terrain(terrain_texture_path, xpix, ypix, height_variation, ruggedness, seed)
     generate_trees(tree_count, xpix, ypix, mesh)
     add_light(light_type, light_location, light_strength, light_color)
+    camera = add_camera(camera_location, camera_rotation)
+    curve = generate_curve(curve_offset, curve_scale, point_count)
+    curve = look_at_curve(camera, curve, path_duration)
 
     save_scene_to_file(file_path)
