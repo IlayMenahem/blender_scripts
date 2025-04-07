@@ -2,6 +2,21 @@
 
 here we're going to generate a dataset using blender scripts.
 
-[project timeline](https://docs.google.com/document/d/1UBRHXNqEymnoU_7NFHTs5bM4Y9rxuugejoWpQfEB_uM/edit?tab=t.0)
-[govmap](https://www.govmap.gov.il/)
-[intresting simulation](https://computationalsciences.org/publications/haedrich-2021-wildfires.html)
+## setup and requirements
+blender version 4.4.0
+
+```bash
+pip install -r requirements.txt
+```
+
+## running the scripts
+to generate a blend of a fire scene
+```bash
+python forrestGeneration.py
+```
+
+to render a scene
+you need to change the variable base_path in videoGeneration.py to your desired path
+```bash
+python videoGeneration.py
+```
